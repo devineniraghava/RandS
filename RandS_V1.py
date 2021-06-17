@@ -50,7 +50,7 @@ tau2 = symbols(r"{\left\langle\bar{\mathrm{\tau}}\right\rangle}_2")
 s = symbols(r"S")
 tau_n1, tau_n2, tau_n3, tau_n23  = symbols(r"{\mathrm{\tau}}_{n_1} {\mathrm{\tau}}_{n_2} {\mathrm{\tau}}_{n_3} {\mathrm{\tau}}_{n_{23}}")
 tau_bar_e1, tau_bar_e2, tau_bar_e23  = symbols(r"{\bar{\mathrm{\tau}}}_{e_1} {\bar{\mathrm{\tau}}}_{e_2} {\bar{\mathrm{\tau}}}_{e_{23}}")
-
+sigma_squared = symbols(r"\mathrm{\sigma}^{2}")
 
 ###############################################################################
 # Equations
@@ -78,6 +78,11 @@ eqn_tau_n2 = v2 /vdot_2
 eqn_v3 = v23 - v2
 eqn_tau_n3 = v3 / vdot_3
 e_rel_val = 0.5 # relativer Luftaustauschwirkungsgrad
+
+eqn_f_of_s = log((1/(tau_n2*s + 1)) / ((1+(vdot_3/vdot_s)*(1- 1/(tau_n2*s + 1)*1/(tau_n3*s + 1)))))
+
+
+
 
 
 ###############################################################################
@@ -115,11 +120,19 @@ vdot_2_val = eqn_vdot_2.subs({vdot_3: vdot_3_val,vdot_s: vdot_s_val })
 
 s_val = eqn_s.subs({vdot_s:vdot_s_val, vdot_2:vdot_2_val})
 
-tau_n2 = eqn_tau_n2.subs({v2: v2_val, vdot_2:vdot_2_val  })
+tau_n2_val = eqn_tau_n2.subs({v2: v2_val, vdot_2:vdot_2_val  })
 
 v3_val = eqn_v3.subs({v23:v23_val, v2: v2_val})
 
-tau_n3 = eqn_tau_n3.subs({v3:v3_val, vdot_3: vdot_3_val })
+tau_n3_val = eqn_tau_n3.subs({v3:v3_val, vdot_3: vdot_3_val })
+
+tau_n23_val = Derivative(eqn_f_of_s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
+
+sigma_squared_val = Derivative(eqn_f_of_s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
+
+mu3_val = Derivative(eqn_f_of_s, s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
+
+mu4_val = Derivative(eqn_f_of_s, s, s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
 
 
 #%%
