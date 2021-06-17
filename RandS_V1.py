@@ -126,7 +126,7 @@ v3_val = eqn_v3.subs({v23:v23_val, v2: v2_val})
 
 tau_n3_val = eqn_tau_n3.subs({v3:v3_val, vdot_3: vdot_3_val })
 
-tau_n23_val = Derivative(eqn_f_of_s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
+tau_n23_val = abs(Derivative(eqn_f_of_s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val}))
 
 sigma_squared_val = Derivative(eqn_f_of_s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
 
@@ -134,6 +134,15 @@ mu3_val = Derivative(eqn_f_of_s, s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3
 
 mu4_val = Derivative(eqn_f_of_s, s, s, s, s).doit().subs({tau_n2:tau_n2_val, tau_n3: tau_n3_val, s:0, vdot_3:vdot_3_val, vdot_s:vdot_s_val})
 
+sigma_squared_star_val = sigma_squared_val/pow(tau_n23_val,2)
+
+tau_bar_e23_val = abs((sigma_squared_star_val + 1) * tau_n23_val)
+
+alpha_23_val = tau_bar_e23_val/2
+
+epsilon_a_23 = tau_n23_val/tau_bar_e23_val
+
+tau_n1_val = tau_bar_e1_val/(2*3600)
 
 #%%
 
