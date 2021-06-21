@@ -144,6 +144,34 @@ epsilon_a_23 = tau_n23_val/tau_bar_e23_val
 
 tau_n1_val = tau_bar_e1_val/(2*3600)
 
+R_1_val = 1/s_val-(1-s_val)/(2*s_val*epsilon_a_23)
+
+vdot_0_1_val = vdot_s_val*(1-R_1_val)/R_1_val
+
+
+vdot_1_1_val = v2_val
+
+vdot_0_0_val = 2*((vdot_1_1_val/tau_bar_e1_val*3600)-vdot_s_val/2)
+
+vdot_1_0_val =1/2*tau_bar_e1_val/3600*(vdot_1_val+vdot_s_val)
+
+R_0 = 1-vdot_0_0_val/(vdot_0_0_val+vdot_s_val)
+
+tau_n123_val = abs(Derivative(eqn_f_of_s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+     s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_0_val}))
+
+
+# tau_n123_val = abs(Derivative(eqn_f_of_s,s).doit().subs(
+#     {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+#      s:0, vdot_3:47, vdot_s:213.1}))
+
+
+
+
 #%%
 
 prYellow("==============End of Execution================")
+prYellow(tau_n123_val)
+
+# %%
