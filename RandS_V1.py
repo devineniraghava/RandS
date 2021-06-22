@@ -29,12 +29,20 @@ from sklearn.linear_model import LinearRegression
 
 def prRed(skk): print("\033[31;1;m {}\033[00m" .format(skk)) 
 def prYellow(skk): print("\033[33;1;m {}\033[00m" .format(skk))
+#%%
+df = pd.read_excel("input_data.xlsx")
+
+msg ="Please select an experiment"
+title = "Experiment selection"
+choices = df["name"].to_list()
+choice = choicebox(msg, title, choices)
 
 
 #%%
 # write all the variables that are inputs
 
-location = "Herdern"
+location = "ESHL"
+integer = 14
 
 ###############################################################################
 # Variables
@@ -91,7 +99,6 @@ eqn_f_of_s = log((1/(tau_n2*s + 1)) / ((1+(vdot_3/vdot_s)*(1- 1/(tau_n2*s + 1)*1
 
 #%%
 
-integer = 4
 df = pd.read_excel("input_data.xlsx")
 # input values
 vdot_1_val, vdot_2_val, vdot_3_val, vdot_4_val = df.at[integer, 'dotV1'], df.at[integer, 'dotV2'], df.at[integer, 'dotV3'], df.at[integer, 'dotV4']
@@ -153,25 +160,77 @@ vdot_1_1_val = v2_val
 
 vdot_0_0_val = 2*((vdot_1_1_val/tau_bar_e1_val*3600)-vdot_s_val/2)
 
-vdot_1_0_val =1/2*tau_bar_e1_val/3600*(vdot_1_val+vdot_s_val)
+vdot_1_0_val = 1/2*tau_bar_e1_val/3600*(vdot_1_val+vdot_s_val)
 
 R_0 = 1-vdot_0_0_val/(vdot_0_0_val+vdot_s_val)
 
-tau_n123_val = abs(Derivative(eqn_f_of_s, s,s).doit().subs(
+tau_n123_0_val = abs(Derivative(eqn_f_of_s, s).doit().subs(
     {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
      s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_0_val}))
 
-
-tau_n123_val = abs(Derivative(eqn_f_of_s,s,s).doit().subs(
+sigma_squared_0_val = abs(Derivative(eqn_f_of_s, s, s).doit().subs(
     {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
-      s:0, vdot_3:47.0749427819056, vdot_s:213.1}))
+     s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_0_val}))
+
+mu3_0_val = abs(Derivative(eqn_f_of_s, s, s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+     s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_0_val}))
+
+mu4_0_val = abs(Derivative(eqn_f_of_s, s, s, s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+     s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_0_val}))
+
+sigma_squared_star_0_val = sigma_squared_0_val/ pow(tau_n123_0_val,2)
+
+tau_bar_e23_0_val = (sigma_squared_star_0_val + 1 ) * tau_n123_0_val
+
+alpha_123_0_val = tau_bar_e23_0_val/2
+
+epsilon_ar_123_0_val = tau_n123_0_val/tau_bar_e23_0_val # percentage
+
+epsilon_ar_23_0_val = (1-s_val)/(2*(1-s_val*R_0))
+
+###############################################################################
+tau_n123_1_val = abs(Derivative(eqn_f_of_s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+      s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_1_val}))
+
+sigma_squared_1_val = abs(Derivative(eqn_f_of_s, s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+      s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_1_val}))
+
+mu3_0_val = abs(Derivative(eqn_f_of_s, s, s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+      s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_1_val}))
+
+mu4_0_val = abs(Derivative(eqn_f_of_s, s, s, s, s).doit().subs(
+    {tau_n2:tau_n1_val, tau_n3: tau_n23_val,
+      s:0, vdot_3:vdot_s_val, vdot_s:vdot_0_1_val}))
+
+sigma_squared_star_1_val = sigma_squared_1_val/ pow(tau_n123_1_val,2)
+
+tau_bar_e23_1_val = (sigma_squared_star_1_val + 1 ) * tau_n123_1_val
+
+alpha_123_1_val = tau_bar_e23_1_val/2
+
+epsilon_ar_123_1_val = tau_n123_1_val/tau_bar_e23_1_val # percentage
+
+p_123_M1_1 = (vdot_0_1_val)/(vdot_0_1_val+vdot_s_val)*(vdot_s_val/(vdot_0_1_val+vdot_s_val))
+
+epsilon_ar_23_1_val = (1-s_val)/(2*(1-s_val*R_1_val))
 
 
+epsilon_a_a_DRK = epsilon_a_23*e_rel_val*tau_bar_e23_val/df.at[integer, 'air age'] # percentage
+
+epsilon_a_a_123_0 = epsilon_ar_123_0_val*epsilon_a_23*tau_bar_e23_0_val/alpha_23_val # percentage
+
+epsilon_a_a_123_1 = epsilon_ar_123_1_val*epsilon_a_23*tau_bar_e23_1_val/alpha_23_val
 
 
 #%%
 
 prYellow("==============End of Execution================")
-prYellow(tau_n123_val)
+prYellow(epsilon_a_a_123_0*100)
+prRed(epsilon_a_a_123_1*100)
 
 # %%
