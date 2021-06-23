@@ -14,6 +14,7 @@ import time
 import datetime as dt
 import matplotlib.pyplot as plt
 import operator # for plotting
+from uncertainties import ufloat
 
 from openpyxl import load_workbook
 
@@ -24,7 +25,6 @@ from sqlalchemy import create_engine
 
 from easygui import *
 import sys
-
 from sklearn.linear_model import LinearRegression
 
 def prRed(skk): print("\033[31;1;m {}\033[00m" .format(skk)) 
@@ -41,8 +41,8 @@ choice = choicebox(msg, title, choices)
 #%%
 # write all the variables that are inputs
 
-location = "ESHL"
-integer = 14
+integer = df[df["name"]==choice].index[0]
+location = df.at[integer, "location"]
 
 ###############################################################################
 # Variables
